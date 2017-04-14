@@ -6,6 +6,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+class PersonData {
+  String name = '';
+  String phoneNumber = '';
+  String password = '';
+  String story = '';
+}
+
 class TextFormFieldDemo extends StatefulWidget {
   TextFormFieldDemo({ Key key }) : super(key: key);
 
@@ -15,16 +22,21 @@ class TextFormFieldDemo extends StatefulWidget {
   TextFormFieldDemoState createState() => new TextFormFieldDemoState();
 }
 
-class PersonData {
-  String name = '';
-  String phoneNumber = '';
-  String password = '';
+class TextFormFieldDemoState extends State<TextFormFieldDemoState> {
+  PersonData person = new PersonData();
 }
 
-class TextFormFieldDemoState extends State<TextFormFieldDemo> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+class TextFormFieldEditDemo extends StatefulWidget {
+  TextFormFieldEditDemo({ Key key, this.person }) : super(key: key);
 
-  PersonData person = new PersonData();
+  final PersonData person;
+
+  @override
+  TextFormFieldDemoEditState createState() => new TextFormFieldDemoEditState();
+}
+
+class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
@@ -43,7 +55,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      showInSnackBar('${person.name}\'s phone number is ${person.phoneNumber}');
+      showInSnackBar('${widget.person.name}\'s phone number is ${widget.person.phoneNumber}');
     }
   }
 
@@ -119,7 +131,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                 hintText: 'What do people call you?',
                 labelText: 'Name *',
               ),
-              onSaved: (String value) { person.name = value; },
+              onSaved: (String value) { widget.person.name = value; },
               validator: _validateName,
             ),
             new TextFormField(
@@ -129,7 +141,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                 labelText: 'Phone Number *',
               ),
               keyboardType: TextInputType.phone,
-              onSaved: (String value) { person.phoneNumber = value; },
+              onSaved: (String value) { widget.person.phoneNumber = value; },
               validator: _validatePhoneNumber,
             ),
             new TextFormField(
@@ -138,6 +150,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                 labelText: 'Life story',
               ),
               maxLines: 3,
+              onSaved: (String value) { widget.person.story = value; },
             ),
             new Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +163,7 @@ class TextFormFieldDemoState extends State<TextFormFieldDemo> {
                       labelText: 'New Password *',
                     ),
                     obscureText: true,
-                    onSaved: (String value) { person.password = value; },
+                    onSaved: (String value) { widget.person.password = value; },
                   ),
                 ),
                 const SizedBox(width: 16.0),
