@@ -13,30 +13,69 @@ class PersonData {
   String story = '';
 }
 
-class TextFormFieldDemo extends StatefulWidget {
-  TextFormFieldDemo({ Key key }) : super(key: key);
+class TextFormFieldViewDemo extends StatefulWidget {
+  TextFormFieldViewDemo({ Key key }) : super(key: key);
 
   static const String routeName = '/material/text-form-field';
 
   @override
-  TextFormFieldDemoState createState() => new TextFormFieldDemoState();
+  TextFormFieldViewDemoState createState() => new TextFormFieldViewDemoState();
 }
 
-class TextFormFieldDemoState extends State<TextFormFieldDemoState> {
-  PersonData person = new PersonData();
+class TextFormFieldViewDemoState extends State<TextFormFieldViewDemo> {
+  List<PersonData> persons = new List<PersonData>();
+
+  Future<Null> _showAddPage() async {
+    final PersonData newPerson = await Navigator.push(
+      context, 
+      new MaterialPageRoute<PersonData>(
+        builder: (BuildContext context) => new TextFormFieldEditDemo(),
+        fullscreenDialog: true,
+      )
+    );
+    if (newPerson != null)
+      setState(() {persons.add(newPerson);});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: const Text('Text fields'),
+      ),
+      body: persons.isEmpty 
+          ? new Text('User list empty')
+          : new ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              children: persons.map<Widget>((PersonData person) {
+                return new Card(
+                  child: new ListTile(
+                    leading: new CircleAvatar(child: new Text(person.name[0])),
+                    title: new Text(person.name),
+                  ),
+                );
+              })
+            ),
+      floatingActionButton: new FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          _showAddPage();
+        },
+      ),
+    );
+  }
 }
 
 class TextFormFieldEditDemo extends StatefulWidget {
-  TextFormFieldEditDemo({ Key key, this.person }) : super(key: key);
-
-  final PersonData person;
+  TextFormFieldEditDemo({ Key key }) : super(key: key);
 
   @override
-  TextFormFieldDemoEditState createState() => new TextFormFieldDemoEditState();
+  TextFormFieldEditDemoState createState() => new TextFormFieldEditDemoState();
 }
 
-class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
+class TextFormFieldEditDemoState extends State<TextFormFieldEditDemo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final PersonData _person = new PersonData();
 
   void showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
@@ -55,7 +94,7 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      showInSnackBar('${widget.person.name}\'s phone number is ${widget.person.phoneNumber}');
+      Navigator.pop(context, _person);
     }
   }
 
@@ -95,7 +134,9 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
     return await showDialog<bool>(
       context: context,
       child: new AlertDialog(
-        title: const Text('This form has errors'),
+        title: new Text(_formWasEdited 
+            ? 'Discard changes?'
+            : 'This form has errors'),
         content: const Text('Really leave this form?'),
         actions: <Widget> [
           new FlatButton(
@@ -131,7 +172,7 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
                 hintText: 'What do people call you?',
                 labelText: 'Name *',
               ),
-              onSaved: (String value) { widget.person.name = value; },
+              onSaved: (String value) { _person.name = value; },
               validator: _validateName,
             ),
             new TextFormField(
@@ -141,7 +182,7 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
                 labelText: 'Phone Number *',
               ),
               keyboardType: TextInputType.phone,
-              onSaved: (String value) { widget.person.phoneNumber = value; },
+              onSaved: (String value) { _person.phoneNumber = value; },
               validator: _validatePhoneNumber,
             ),
             new TextFormField(
@@ -150,7 +191,7 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
                 labelText: 'Life story',
               ),
               maxLines: 3,
-              onSaved: (String value) { widget.person.story = value; },
+              onSaved: (String value) { _person.story = value; },
             ),
             new Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +204,7 @@ class TextFormFieldDemoEditState extends State<TextFormFieldEditDemo> {
                       labelText: 'New Password *',
                     ),
                     obscureText: true,
-                    onSaved: (String value) { widget.person.password = value; },
+                    onSaved: (String value) { _person.password = value; },
                   ),
                 ),
                 const SizedBox(width: 16.0),

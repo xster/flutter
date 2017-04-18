@@ -255,8 +255,8 @@ List<GalleryItem> _buildGalleryItems() {
       title: 'Text fields',
       subtitle: 'Single line of editable text and numbers',
       category: 'Material Components',
-      routeName: TextFormFieldDemo.routeName,
-      buildRoute: (BuildContext context) => new TextFormFieldDemo(),
+      routeName: TextFormFieldViewDemo.routeName,
+      buildRoute: (BuildContext context) => new TextFormFieldViewDemo(),
     ),
     new GalleryItem(
       title: 'Tooltips',
