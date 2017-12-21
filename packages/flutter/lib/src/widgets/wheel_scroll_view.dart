@@ -17,13 +17,13 @@ import 'package:flutter/widgets.dart';
 ///
 /// It is also useful if you need to shrink-wrap in both axes (the main
 /// scrolling direction as well as the cross axis), as one might see in a dialog
-/// or pop-up menu. In that case, you might pair the [WheelScrollView]
+/// or pop-up menu. In that case, you might pair the [ListWheelScrollView]
 /// with a [ListBody] child.
 ///
 /// When you have a list of children and do not require cross-axis
 /// shrink-wrapping behavior, for example a scrolling list that is always the
 /// width of the screen, consider [ListView], which is vastly more efficient
-/// that a [WheelScrollView] containing a [ListBody] or [Column] with
+/// that a [ListWheelScrollView] containing a [ListBody] or [Column] with
 /// many children.
 ///
 /// See also:
@@ -32,16 +32,15 @@ import 'package:flutter/widgets.dart';
 /// * [GridView], which handles multiple children in a scrolling grid.
 /// * [PageView], for a scrollable that works page by page.
 /// * [Scrollable], which handles arbitrary scrolling effects.
-class WheelScrollView extends StatelessWidget {
+class ListWheelScrollView extends StatelessWidget {
   /// Creates a box in which a single widget can be scrolled.
-  WheelScrollView({
+  ListWheelScrollView({
     Key key,
     this.scrollDirection: Axis.vertical,
-    this.padding,
     this.physics,
     this.controller,
     this.itemExtent,
-    this.child,
+    this.children,
   }) : assert(scrollDirection != null),
        super(key: key);
 
@@ -49,9 +48,6 @@ class WheelScrollView extends StatelessWidget {
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
-
-  /// The amount of space by which to inset the child.
-  final EdgeInsetsGeometry padding;
 
   /// An object that can be used to control the position to which this scroll
   /// view is scrolled.
@@ -76,7 +72,7 @@ class WheelScrollView extends StatelessWidget {
   final double itemExtent;
 
   /// The widget that scrolls.
-  final Widget child;
+  final List<Widget> children;
 
   AxisDirection _getDirection(BuildContext context) {
     return getAxisDirectionFromAxisReverseAndDirectionality(context, scrollDirection, false);
@@ -85,68 +81,70 @@ class WheelScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AxisDirection axisDirection = _getDirection(context);
-    Widget contents = child;
-    if (padding != null)
-      contents = new Padding(padding: padding, child: contents);
     return new Scrollable(
       axisDirection: axisDirection,
       controller: controller,
       physics: physics,
       viewportBuilder: (BuildContext context, ViewportOffset offset) {
-        return new _WheelViewport(
+        return new _ListWheelViewport(
           axisDirection: axisDirection,
           itemExtent: itemExtent,
           offset: offset,
-          child: contents,
+          children: children,
         );
       },
     );
   }
 }
 
-class _WheelViewport extends SingleChildRenderObjectWidget {
-  const _WheelViewport({
+class _ListWheelViewport extends MultiChildRenderObjectWidget {
+  _ListWheelViewport({
     Key key,
     this.axisDirection: AxisDirection.down,
     this.itemExtent,
     this.offset,
-    Widget child,
+    List<Widget> children,
   }) : assert(axisDirection != null),
-       super(key: key, child: child);
+       super(key: key, children: children);
 
   final AxisDirection axisDirection;
   final double itemExtent;
   final ViewportOffset offset;
 
   @override
-  _RenderWheelViewport createRenderObject(BuildContext context) {
-    return new _RenderWheelViewport(
+  _RenderListWheelViewport createRenderObject(BuildContext context) {
+    return new _RenderListWheelViewport(
       itemExtent: itemExtent,
       offset: offset,
     );
   }
 
   @override
-  void updateRenderObject(BuildContext context, _RenderWheelViewport renderObject) {
+  void updateRenderObject(BuildContext context, _RenderListWheelViewport renderObject) {
     renderObject
       ..itemExtent = itemExtent
       ..offset = offset;
   }
 }
 
-class _RenderWheelViewport
+class ListWheelParentData extends ContainerBoxParentData<RenderBox> {
+
+}
+
+class _RenderListWheelViewport
     extends RenderBox
-    with RenderObjectWithChildMixin<RenderBox>
+    with ContainerRenderObjectMixin<RenderBox, ListWheelParentData>,
+         RenderBoxContainerDefaultsMixin<RenderBox, ListWheelParentData>
     implements RenderAbstractViewport {
-  _RenderWheelViewport({
+  _RenderListWheelViewport({
     @required ViewportOffset offset,
     @required double itemExtent,
-    RenderBox child,
+    List<RenderBox> children,
   }) :
        assert(offset != null),
        _offset = offset,
        _itemExtent = itemExtent {
-    this.child = child;
+    this.children = child;
   }
 
   ViewportOffset get offset => _offset;

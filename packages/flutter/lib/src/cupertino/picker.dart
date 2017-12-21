@@ -45,7 +45,7 @@ class CupertinoPickerState extends State<CupertinoPicker> {
         new Positioned.fill(
           child: new NotificationListener<ScrollNotification>(
             onNotification: _handleScrollNotification,
-            child: new WheelScrollView(
+            child: new ListWheelScrollView(
               controller: scrollController,
               physics: new _PickerScrollPhysics(widget.itemExtent),
               itemExtent: widget.itemExtent,
