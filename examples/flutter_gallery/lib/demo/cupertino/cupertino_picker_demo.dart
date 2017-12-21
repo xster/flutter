@@ -24,31 +24,29 @@ class _CupertinoPickerDemoState extends State<CupertinoPickerDemo> {
         alignment: Alignment.bottomCenter,
         child: new Container(
           height: 200.0,
-          width: 400.0,
+          // width: 400.0,
           decoration: new BoxDecoration(
             border: new Border.all(width: 1.0),
           ),
-          child: new SelectionWheelScrollView(
-            itemExtent: 37.0,
-            child: new Container(
-              // color: Colors.green,
-              child: new Column(
-                children: new List<Widget>.generate(5, (int index) {
-                  return new Container(
-                    margin: const EdgeInsets.symmetric(vertical: 6.0),
-                    height: 25.0,
-                    width: 200.0,
-                    color: Colors.red,
-                    child: new Center(
-                      child: new Text(
-                        index.toString(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
+          child: new CupertinoPicker(
+            itemExtent: 50.0,
+            children: new List<Widget>.generate(6, (int index) {
+              return new Container(
+                margin: const EdgeInsets.symmetric(vertical: 3.0),
+                height: 50.0,
+                width: 200.0,
+                color: Colors.red,
+                child: new Center(
+                  child: new Text(
+                    index.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.0,
                     ),
-                  );
-                }),
-              ),
-            ),
+                  ),
+                ),
+              );
+            }),
           ),
         ),
       ),
