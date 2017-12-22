@@ -29,8 +29,9 @@ class _CupertinoPickerDemoState extends State<CupertinoPickerDemo> {
             border: new Border.all(width: 1.0),
           ),
           child: new CupertinoPicker(
+            radiusRadio: 0.5,
             itemExtent: 50.0,
-            children: new List<Widget>.generate(6, (int index) {
+            children: new List<Widget>.generate(20, (int index) {
               return new Container(
                 margin: const EdgeInsets.symmetric(vertical: 3.0),
                 height: 50.0,

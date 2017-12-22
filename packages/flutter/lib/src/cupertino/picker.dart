@@ -9,8 +9,9 @@ import 'package:flutter/widgets.dart';
 const Color _highlighterBorder = const Color(0xFF7F7F7F);
 
 class CupertinoPicker extends StatefulWidget {
-  CupertinoPicker({this.itemExtent, this.children});
+  CupertinoPicker({this.radiusRadio, this.itemExtent, this.children});
 
+  final double radiusRadio;
   final double itemExtent;
 
   final List<Widget> children;
@@ -30,11 +31,11 @@ class CupertinoPickerState extends State<CupertinoPicker> {
   }
 
   bool _handleScrollNotification(ScrollNotification scrollNotification) {
-    if ((scrollNotification.metrics.pixels % widget.itemExtent).abs() < 0.5
-        && (scrollNotification.metrics.pixels / widget.itemExtent).round() != _lastHapticPosition) {
-      HapticFeedback.vibrate();
-      _lastHapticPosition = (scrollNotification.metrics.pixels / widget.itemExtent).round();
-    }
+//    if ((scrollNotification.metrics.pixels % widget.itemExtent).abs() < 0.5
+//        && (scrollNotification.metrics.pixels / widget.itemExtent).round() != _lastHapticPosition) {
+//      HapticFeedback.vibrate();
+//      _lastHapticPosition = (scrollNotification.metrics.pixels / widget.itemExtent).round();
+//    }
     return false;
   }
 
@@ -47,14 +48,10 @@ class CupertinoPickerState extends State<CupertinoPicker> {
             onNotification: _handleScrollNotification,
             child: new ListWheelScrollView(
               controller: scrollController,
-              // physics: new _PickerScrollPhysics(widget.itemExtent),
+              physics: new _PickerScrollPhysics(widget.itemExtent),
+              radiusRatio: widget.radiusRadio,
               itemExtent: widget.itemExtent,
-              children: new List<Widget>.generate(widget.children.length, (int index) {
-                return new SizedBox(
-                  height: widget.itemExtent,
-                  child: widget.children[index],
-                );
-              }),
+              children: widget.children,
             ),
           ),
         ),

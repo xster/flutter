@@ -38,6 +38,7 @@ class ListWheelScrollView extends StatelessWidget {
     Key key,
     this.scrollDirection: Axis.vertical,
     this.physics,
+    this.radiusRatio,
     this.controller,
     this.itemExtent,
     this.children,
@@ -69,6 +70,8 @@ class ListWheelScrollView extends StatelessWidget {
   /// Defaults to matching platform conventions.
   final ScrollPhysics physics;
 
+  final double radiusRatio;
+
   final double itemExtent;
 
   /// The widget that scrolls.
@@ -88,6 +91,7 @@ class ListWheelScrollView extends StatelessWidget {
       viewportBuilder: (BuildContext context, ViewportOffset offset) {
         return new _ListWheelViewport(
           axisDirection: axisDirection,
+          radiusRatio: radiusRatio,
           itemExtent: itemExtent,
           offset: offset,
           children: children,
@@ -101,6 +105,7 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
   _ListWheelViewport({
     Key key,
     this.axisDirection: AxisDirection.down,
+    this.radiusRatio,
     this.itemExtent,
     this.offset,
     List<Widget> children,
@@ -108,12 +113,14 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
        super(key: key, children: children);
 
   final AxisDirection axisDirection;
+  final double radiusRatio;
   final double itemExtent;
   final ViewportOffset offset;
 
   @override
   _RenderListWheelViewport createRenderObject(BuildContext context) {
     return new _RenderListWheelViewport(
+      radiusRatio: radiusRatio,
       itemExtent: itemExtent,
       offset: offset,
     );
@@ -122,6 +129,7 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
   @override
   void updateRenderObject(BuildContext context, _RenderListWheelViewport renderObject) {
     renderObject
+      ..radiusRatio = radiusRatio
       ..itemExtent = itemExtent
       ..offset = offset;
   }
@@ -140,11 +148,13 @@ class _RenderListWheelViewport
     implements RenderAbstractViewport {
   _RenderListWheelViewport({
     @required ViewportOffset offset,
+    @required double radiusRatio,
     @required double itemExtent,
     List<RenderBox> children,
   }) :
        assert(offset != null),
        _offset = offset,
+       _radiusRatio = radiusRatio,
        _itemExtent = itemExtent {
     addAll(children);
   }
@@ -161,6 +171,15 @@ class _RenderListWheelViewport
     if (attached)
       _offset.addListener(_hasScrolled);
     markNeedsLayout();
+  }
+
+  double _radiusRatio;
+  set radiusRatio(double value) {
+    assert(value != null);
+    if (value == _radiusRatio)
+      return;
+    _radiusRatio = value;
+    markNeedsPaint();
   }
 
   double _itemExtent;
@@ -218,7 +237,7 @@ class _RenderListWheelViewport
 
   double get _topVisibleScrollExtent {
     assert(hasSize);
-    return _minScrollExtent - size.height + _itemExtent / 2.0;
+    return _minScrollExtent - size.height / 2.0 + _itemExtent / 2.0;
   }
 
   double _getIntrinsicCrossAxis(_ChildSizingFunction childSize) {
@@ -278,11 +297,17 @@ class _RenderListWheelViewport
     double currentOffset = 0.0;
     RenderBox child = firstChild;
     final BoxConstraints innerConstraints =
-        constraints.tighten(height: _itemExtent);
+        constraints.copyWith(
+          minHeight: _itemExtent,
+          maxHeight: _itemExtent,
+          minWidth: 0.0,
+        );
     while(child != null) {
-      child.layout(innerConstraints);
+      child.layout(innerConstraints, parentUsesSize: true);
       final ListWheelParentData childParentData = child.parentData;
-      childParentData.offset = new Offset(0.0, currentOffset);
+      final double crossPosition =
+          size.width / 2.0 - child.size.width / 2.0;
+      childParentData.offset = new Offset(crossPosition, currentOffset);
       currentOffset += _itemExtent;
       child = childParentData.nextSibling;
     }
@@ -296,8 +321,8 @@ class _RenderListWheelViewport
   }
 
   bool _shouldClipAtPaintOffset(Offset paintOffset) {
-    return paintOffset < Offset.zero
-        || size.height < paintOffset.dy + _maxScrollExtent;
+    return paintOffset.dy < 0.0
+        || size.height < paintOffset.dy + _maxScrollExtent + _itemExtent;
   }
 
   @override
@@ -324,28 +349,40 @@ class _RenderListWheelViewport
     if (paintOffset.dy >= 0.0) {
       childToPaint = firstChild;
     } else {
-      childToPaint = getChildrenAsList()[paintOffset.dy ~/ _itemExtent];
+      childToPaint = getChildrenAsList()[-paintOffset.dy ~/ (_itemExtent * _radiusRatio / 0.5)];
     }
     childParentData = childToPaint.parentData;
 
     while (childToPaint != null
         && paintOffset.dy + childParentData.offset.dy < size.height) {
-      context.paintChild(
-        childToPaint,
-        offset + paintOffset + childParentData.offset
+      final double relativeY =
+          (paintOffset.dy + childParentData.offset.dy + _itemExtent / 2.0) / size.height;
+      final Matrix4 transform = MatrixUtils.createCylindricalProjectionTransform(
+        radius: size.height * _radiusRatio,
+        angle: - math.pi * 0.7 * (relativeY - 0.5),
+        perspective: 0.0007,
       );
+      context.pushTransform(
+        needsCompositing,
+        offset,
+        _effectiveTransform(transform),
+        (PaintingContext context, Offset offset) {
+
+        context.paintChild(
+          childToPaint,
+          offset + new Offset(childParentData.offset.dx, -_topVisibleScrollExtent));
+      });
+      // context.paintChild(
+      //   childToPaint,
+      //   offset + paintOffset + childParentData.offset
+      // );
       childToPaint = childParentData.nextSibling;
-      childParentData = childToPaint.parentData;
+      childParentData = childToPaint?.parentData;
     }
 
       // void paintContents(PaintingContext context, Offset offset) {
       // }
       // final double percent = (paintOffset.dy + _minScrollExtent) / (_maxScrollExtent - _minScrollExtent);
-      // final Matrix4 transform = MatrixUtils.createCylindricalProjectionTransform(
-      //   radius: size.height / 3.0,
-      //   angle: - math.pi * 0.7 * (percent + 0.5),
-      //   perspective: 0.0005,
-      // );
 
       // context.canvas
       //   ..clipRect()
