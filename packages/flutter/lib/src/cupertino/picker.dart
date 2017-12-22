@@ -47,17 +47,14 @@ class CupertinoPickerState extends State<CupertinoPicker> {
             onNotification: _handleScrollNotification,
             child: new ListWheelScrollView(
               controller: scrollController,
-              physics: new _PickerScrollPhysics(widget.itemExtent),
+              // physics: new _PickerScrollPhysics(widget.itemExtent),
               itemExtent: widget.itemExtent,
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: new List<Widget>.generate(widget.children.length, (int index) {
-                  return new SizedBox(
-                    height: widget.itemExtent,
-                    child: widget.children[index],
-                  );
-                }),
-              ),
+              children: new List<Widget>.generate(widget.children.length, (int index) {
+                return new SizedBox(
+                  height: widget.itemExtent,
+                  child: widget.children[index],
+                );
+              }),
             ),
           ),
         ),

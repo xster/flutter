@@ -205,20 +205,20 @@ class _RenderListWheelViewport
 
   double get _minScrollExtent {
     assert(hasSize);
-    // return 0.0;
-    return - size.height / 2.0 + _itemExtent / 2.0;
+    return 0.0;
   }
 
   double get _maxScrollExtent {
     assert(hasSize);
-    if (child == null)
+    if (!(childCount > 0))
       return 0.0;
 
-    return math.max(0.0, child.size.height - size.height / 2.0 - _itemExtent / 2.0);
+    return math.max(0.0, (childCount - 1) * _itemExtent);
   }
 
-  BoxConstraints _getInnerConstraints(BoxConstraints constraints) {
-    return constraints.widthConstraints();
+  double get _topVisibleScrollExtent {
+    assert(hasSize);
+    return _minScrollExtent - size.height + _itemExtent / 2.0;
   }
 
   double _getIntrinsicCrossAxis(_ChildSizingFunction childSize) {
@@ -275,42 +275,84 @@ class _RenderListWheelViewport
 
   @override
   void performLayout() {
-
-    child.layout(_getInnerConstraints(constraints), parentUsesSize: true);
+    double currentOffset = 0.0;
+    RenderBox child = firstChild;
+    final BoxConstraints innerConstraints =
+        constraints.tighten(height: _itemExtent);
+    while(child != null) {
+      child.layout(innerConstraints);
+      final ListWheelParentData childParentData = child.parentData;
+      childParentData.offset = new Offset(0.0, currentOffset);
+      currentOffset += _itemExtent;
+      child = childParentData.nextSibling;
+    }
 
     offset.applyViewportDimension(_viewportExtent);
     offset.applyContentDimensions(_minScrollExtent, _maxScrollExtent);
   }
 
   Offset get _paintOffset {
-    return new Offset(0.0, -_offset.pixels);
+    return new Offset(0.0, -_offset.pixels - _topVisibleScrollExtent);
   }
 
   bool _shouldClipAtPaintOffset(Offset paintOffset) {
-    assert(child != null);
-    return paintOffset < Offset.zero || !(Offset.zero & size).contains((paintOffset & child.size).bottomRight);
+    return paintOffset < Offset.zero
+        || size.height < paintOffset.dy + _maxScrollExtent;
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child != null) {
-      final Offset paintOffset = _paintOffset;
+    if (childCount > 0) {
+      if (_shouldClipAtPaintOffset(_paintOffset)) {
+        context.pushClipRect(
+          needsCompositing,
+          offset,
+          Offset.zero & size,
+          _paintVisibleTransformedChildren
+        );
+      } else {
+        _paintVisibleTransformedChildren(context, offset);
+      }
+    }
+  }
+
+  void _paintVisibleTransformedChildren(PaintingContext context, Offset offset) {
+    assert(childCount > 0);
+    RenderBox childToPaint;
+    ListWheelParentData childParentData;
+    final Offset paintOffset = _paintOffset;
+    if (paintOffset.dy >= 0.0) {
+      childToPaint = firstChild;
+    } else {
+      childToPaint = getChildrenAsList()[paintOffset.dy ~/ _itemExtent];
+    }
+    childParentData = childToPaint.parentData;
+
+    while (childToPaint != null
+        && paintOffset.dy + childParentData.offset.dy < size.height) {
+      context.paintChild(
+        childToPaint,
+        offset + paintOffset + childParentData.offset
+      );
+      childToPaint = childParentData.nextSibling;
+      childParentData = childToPaint.parentData;
+    }
 
       // void paintContents(PaintingContext context, Offset offset) {
       // }
-      final double percent = (paintOffset.dy + _minScrollExtent) / (_maxScrollExtent - _minScrollExtent);
-      final Matrix4 transform = MatrixUtils.createCylindricalProjectionTransform(
-        radius: size.height / 3.0,
-        angle: - math.pi * 0.7 * (percent + 0.5),
-        perspective: 0.0005,
-      );
+      // final double percent = (paintOffset.dy + _minScrollExtent) / (_maxScrollExtent - _minScrollExtent);
+      // final Matrix4 transform = MatrixUtils.createCylindricalProjectionTransform(
+      //   radius: size.height / 3.0,
+      //   angle: - math.pi * 0.7 * (percent + 0.5),
+      //   perspective: 0.0005,
+      // );
 
-      context.canvas
-        ..clipRect(Offset.zero & size)
-        // ..transform(new Matrix4.identity().storage)
-        ..transform(_effectiveTransform(transform).storage)
-        ;
-      context.paintChild(child, offset + paintOffset);
+      // context.canvas
+      //   ..clipRect()
+      //   // ..transform(new Matrix4.identity().storage)
+      //   ..transform(_effectiveTransform(transform).storage)
+      //   ;
+      // context.paintChild(child, offset + paintOffset);
 
       // if (_shouldClipAtPaintOffset(paintOffset)) {
         // context.pushClipRect(needsCompositing, offset, Offset.zero & size, (PaintingContext context, Offset offset) {
@@ -321,8 +363,6 @@ class _RenderListWheelViewport
       // } else {
       //   paintContents(context, offset);
       // }
-
-    }
   }
 
   Matrix4 _effectiveTransform(Matrix4 originalMatrix) {
@@ -355,10 +395,10 @@ class _RenderListWheelViewport
 
   @override
   bool hitTestChildren(HitTestResult result, { Offset position }) {
-    if (child != null) {
-      final Offset transformed = position + -_paintOffset;
-      return child.hitTest(result, position: transformed);
-    }
+    // if (child != null) {
+    //   final Offset transformed = position + -_paintOffset;
+    //   return child.hitTest(result, position: transformed);
+    // }
     return false;
   }
 
