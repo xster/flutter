@@ -127,6 +127,8 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
   }
 }
 
+typedef double _ChildSizingFunction(RenderBox child);
+
 class ListWheelParentData extends ContainerBoxParentData<RenderBox> {
 
 }
@@ -144,13 +146,12 @@ class _RenderListWheelViewport
        assert(offset != null),
        _offset = offset,
        _itemExtent = itemExtent {
-    this.children = child;
+    addAll(children);
   }
 
   ViewportOffset get offset => _offset;
   ViewportOffset _offset;
   set offset(ViewportOffset value) {
-    print('new viewportoffset value $value');
     assert(value != null);
     if (value == _offset)
       return;
@@ -178,10 +179,8 @@ class _RenderListWheelViewport
 
   @override
   void setupParentData(RenderObject child) {
-    // We don't actually use the offset argument in BoxParentData, so let's
-    // avoid allocating it at all.
-    if (child.parentData is! ParentData)
-      child.parentData = new ParentData();
+    if (child.parentData is! ListWheelParentData)
+      child.parentData = new ListWheelParentData();
   }
 
   @override
@@ -222,32 +221,51 @@ class _RenderListWheelViewport
     return constraints.widthConstraints();
   }
 
+  double _getIntrinsicCrossAxis(_ChildSizingFunction childSize) {
+    double extent = 0.0;
+    RenderBox child = firstChild;
+    while (child != null) {
+      extent = math.max(extent, childSize(child));
+      final ListWheelParentData childParentData = child.parentData;
+      child = childParentData.nextSibling;
+    }
+    return extent;
+  }
+
   @override
   double computeMinIntrinsicWidth(double height) {
-    if (child != null)
-      return child.getMinIntrinsicWidth(height);
-    return 0.0;
+    return _getIntrinsicCrossAxis(
+      (RenderBox child) => child.getMinIntrinsicWidth(height)
+    );
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    if (child != null)
-      return child.getMaxIntrinsicWidth(height);
-    return 0.0;
+    return _getIntrinsicCrossAxis(
+      (RenderBox child) => child.getMaxIntrinsicWidth(height)
+    );
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    if (child != null)
-      return child.getMinIntrinsicHeight(width);
+    if (childCount > 0)
+      return childCount * _itemExtent;
     return 0.0;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    if (child != null)
-      return child.getMaxIntrinsicHeight(width);
+    if (childCount > 0)
+      return childCount * _itemExtent;
     return 0.0;
+  }
+
+  @override
+  bool get sizedByParent => true;
+
+  @override
+  void performResize() {
+    size = constraints.biggest;
   }
 
   // We don't override computeDistanceToActualBaseline(), because we
@@ -257,12 +275,8 @@ class _RenderListWheelViewport
 
   @override
   void performLayout() {
-    if (child == null) {
-      size = constraints.smallest;
-    } else {
-      child.layout(_getInnerConstraints(constraints), parentUsesSize: true);
-      size = constraints.constrain(child.size);
-    }
+
+    child.layout(_getInnerConstraints(constraints), parentUsesSize: true);
 
     offset.applyViewportDimension(_viewportExtent);
     offset.applyContentDimensions(_minScrollExtent, _maxScrollExtent);
