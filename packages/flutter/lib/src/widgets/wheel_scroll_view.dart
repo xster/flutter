@@ -36,10 +36,13 @@ class ListWheelScrollView extends StatelessWidget {
   /// Creates a box in which a single widget can be scrolled.
   ListWheelScrollView({
     Key key,
+    this.controller,
     this.physics,
     this.diameterRatio,
-    this.controller,
+    this.perspective,
     this.itemExtent,
+    this.clipToSize,
+    this.renderChildrenOutsideViewport,
     this.children,
   }) : super(key: key);
 
@@ -64,8 +67,10 @@ class ListWheelScrollView extends StatelessWidget {
   final ScrollPhysics physics;
 
   final double diameterRatio;
-
+  final double perspective;
   final double itemExtent;
+  final bool clipToSize;
+  final bool renderChildrenOutsideViewport;
 
   /// The widget that scrolls.
   final List<Widget> children;
@@ -78,7 +83,10 @@ class ListWheelScrollView extends StatelessWidget {
       viewportBuilder: (BuildContext context, ViewportOffset offset) {
         return new _ListWheelViewport(
           diameterRatio: diameterRatio,
+          perspective: perspective,
           itemExtent: itemExtent,
+          clipToSize: clipToSize,
+          renderChildrenOutsideViewport: renderChildrenOutsideViewport,
           offset: offset,
           children: children,
         );
@@ -91,20 +99,29 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
   _ListWheelViewport({
     Key key,
     this.diameterRatio,
+    this.perspective,
     this.itemExtent,
+    this.clipToSize,
+    this.renderChildrenOutsideViewport,
     this.offset,
     List<Widget> children,
   }) : super(key: key, children: children);
 
   final double diameterRatio;
+  final double perspective;
   final double itemExtent;
+  final bool clipToSize;
+  final bool renderChildrenOutsideViewport;
   final ViewportOffset offset;
 
   @override
   RenderListWheelViewport createRenderObject(BuildContext context) {
     return new RenderListWheelViewport(
       diameterRatio: diameterRatio,
+      perspective: perspective,
       itemExtent: itemExtent,
+      clipToSize: clipToSize,
+      renderChildrenOutsideViewport: renderChildrenOutsideViewport,
       offset: offset,
     );
   }
@@ -113,16 +130,17 @@ class _ListWheelViewport extends MultiChildRenderObjectWidget {
   void updateRenderObject(BuildContext context, RenderListWheelViewport renderObject) {
     renderObject
       ..diameterRatio = diameterRatio
+      ..perspective = perspective
       ..itemExtent = itemExtent
+      ..clipToSize = clipToSize
+      ..renderChildrenOutsideViewport = renderChildrenOutsideViewport
       ..offset = offset;
   }
 }
 
 typedef double _ChildSizingFunction(RenderBox child);
 
-class ListWheelParentData extends ContainerBoxParentData<RenderBox> {
-
-}
+class ListWheelParentData extends ContainerBoxParentData<RenderBox> { }
 
 /// Render on a wheel a bigger sequential set of objects inside.
 ///
@@ -536,6 +554,8 @@ class RenderListWheelViewport
     final double fractionalY =
         (untransformedPaintingCoordinates.dy + _itemExtent / 2.0) / size.height;
     final double angle = -(fractionalY - 0.5) * 2.0 * _maxVisibleRadian;
+    if (angle > math.pi / 2.0 || angle < -math.pi / 2.0)
+      return;
     print('angle $angle');
 
     final Matrix4 transform = MatrixUtils.createCylindricalProjectionTransform(
