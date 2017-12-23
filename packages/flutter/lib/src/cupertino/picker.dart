@@ -9,9 +9,9 @@ import 'package:flutter/widgets.dart';
 const Color _highlighterBorder = const Color(0xFF7F7F7F);
 
 class CupertinoPicker extends StatefulWidget {
-  CupertinoPicker({this.radiusRadio, this.itemExtent, this.children});
+  CupertinoPicker({this.diameterRatio, this.itemExtent, this.children});
 
-  final double radiusRadio;
+  final double diameterRatio;
   final double itemExtent;
 
   final List<Widget> children;
@@ -49,37 +49,37 @@ class CupertinoPickerState extends State<CupertinoPicker> {
             child: new ListWheelScrollView(
               controller: scrollController,
               physics: new _PickerScrollPhysics(widget.itemExtent),
-              radiusRatio: widget.radiusRadio,
+              diameterRatio: widget.diameterRatio,
               itemExtent: widget.itemExtent,
               children: widget.children,
             ),
           ),
         ),
-        new Positioned.fill(
-          child: new IgnorePointer(
-            child: new Container(
-              decoration: const BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: const <Color>[
-                    const Color(0xFFFFFFFF),
-                    const Color(0xF2FFFFFF),
-                    const Color(0xDDFFFFFF),
-                    const Color(0x00FFFFFF),
-                    const Color(0x00FFFFFF),
-                    const Color(0xDDFFFFFF),
-                    const Color(0xF2FFFFFF),
-                    const Color(0xFFFFFFFF),
-                  ],
-                  stops: const <double>[
-                    0.0, 0.05, 0.09, 0.18, 0.82, 0.91, 0.95, 1.0,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-          ),
-        ),
+//        new Positioned.fill(
+//          child: new IgnorePointer(
+//            child: new Container(
+//              decoration: const BoxDecoration(
+//                gradient: const LinearGradient(
+//                  colors: const <Color>[
+//                    const Color(0xFFFFFFFF),
+//                    const Color(0xF2FFFFFF),
+//                    const Color(0xDDFFFFFF),
+//                    const Color(0x00FFFFFF),
+//                    const Color(0x00FFFFFF),
+//                    const Color(0xDDFFFFFF),
+//                    const Color(0xF2FFFFFF),
+//                    const Color(0xFFFFFFFF),
+//                  ],
+//                  stops: const <double>[
+//                    0.0, 0.05, 0.09, 0.18, 0.82, 0.91, 0.95, 1.0,
+//                  ],
+//                  begin: Alignment.topCenter,
+//                  end: Alignment.bottomCenter,
+//                ),
+//              ),
+//            ),
+//          ),
+//        ),
         new RepaintBoundary(
           child: new IgnorePointer(
             child: new Align(
@@ -125,9 +125,9 @@ class _PickerScrollPhysics extends ScrollPhysics {
   }
 
   double _getTargetPixels(ScrollPosition position, Tolerance tolerance, double velocity) {
-    print('position ${position.pixels}');
+//    print('position ${position.pixels}');
     double itemIndex = _getItem(position);
-    print('index $itemIndex');
+//    print('index $itemIndex');
     if (velocity < -tolerance.velocity)
       itemIndex -= 0.5;
     else if (velocity > tolerance.velocity)
@@ -141,7 +141,6 @@ class _PickerScrollPhysics extends ScrollPhysics {
     // ballistics, which should put us back in range at a page boundary.
     if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
         (velocity >= 0.0 && position.pixels >= position.maxScrollExtent)) {
-      print('out of bound');
       return super.createBallisticSimulation(position, velocity);
     }
     final Tolerance tolerance = this.tolerance;

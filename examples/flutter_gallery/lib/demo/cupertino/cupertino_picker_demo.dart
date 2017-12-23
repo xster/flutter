@@ -21,22 +21,27 @@ class _CupertinoPickerDemoState extends State<CupertinoPickerDemo> {
         title: const Text('Cupertino Picker'),
       ),
       body: new Align(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment.center,
         child: new Container(
           height: 200.0,
-          // width: 400.0,
-          decoration: new BoxDecoration(
-            border: new Border.all(width: 1.0),
+          decoration: const BoxDecoration(
+            border: const Border(
+                top: const BorderSide(width: 1.0),
+                bottom: const BorderSide(width: 1.0),
+            ),
           ),
           child: new CupertinoPicker(
-            radiusRadio: 0.5,
+            diameterRatio: 1.0,
             itemExtent: 50.0,
             children: new List<Widget>.generate(20, (int index) {
               return new Container(
-                margin: const EdgeInsets.symmetric(vertical: 3.0),
+//                margin: const EdgeInsets.symmetric(vertical: 3.0),
                 height: 50.0,
                 width: 200.0,
-                color: Colors.red,
+                decoration: new BoxDecoration(
+                  border: new Border.all(color: Colors.yellow, width: 0.5),
+                  color: Colors.red,
+                ),
                 child: new Center(
                   child: new Text(
                     index.toString(),
