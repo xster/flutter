@@ -227,7 +227,7 @@ class MaterialApp extends StatefulWidget {
   /// If the route contains slashes, then it is treated as a "deep link", and
   /// before this route is pushed, the routes leading to this one are pushed
   /// also. For example, if the route was `/a/b/c`, then the app would start
-  /// with the three routes `/a`, `/a/b`, and `/a/b/c` loaded, in that order.
+  /// with the four routes `/`, `/a`, `/a/b`, and `/a/b/c` loaded, in that order.
   ///
   /// If any part of this process fails to generate routes, then the
   /// [initialRoute] is ignored and [Navigator.defaultRouteName] is used instead
