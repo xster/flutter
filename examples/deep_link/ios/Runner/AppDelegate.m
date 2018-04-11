@@ -5,19 +5,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   [GeneratedPluginRegistrant registerWithRegistry:self];
-  // Override point for customization after application launch.
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
 
-- (void)application:(UIApplication *)application
-    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL))completionHandler {
-  FlutterViewController* viewController = (FlutterViewController*)[UIApplication sharedApplication].keyWindow.rootViewController;
-  if ([shortcutItem.type isEqualToString:@"io.flutter.examples.deep_link.page1"]) {
-    [viewController setInitialRoute:@"/1"];
-  } else if ([shortcutItem.type isEqualToString:@"io.flutter.examples.deep_link.page2"]) {
-    [viewController setInitialRoute:@"/2"];
+  // Set route on the FlutterViewController if launched with shortcut item.
+  if (launchOptions[UIApplicationLaunchOptionsShortcutItemKey]) {
+    FlutterViewController* viewController = (FlutterViewController*)self.window.rootViewController;
+    UIApplicationShortcutItem* shortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if ([shortcutItem.type isEqualToString:@"io.flutter.examples.deep_link.page1"]) {
+      [viewController setInitialRoute:@"/1"];
+    } else if ([shortcutItem.type isEqualToString:@"io.flutter.examples.deep_link.page2"]) {
+      [viewController setInitialRoute:@"/2"];
+    }
   }
+
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 @end

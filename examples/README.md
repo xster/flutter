@@ -45,6 +45,9 @@ Available examples include:
 - **Stocks** The [stocks](stocks) demo shows how one might structure
   an application with several screens.
 
+- **Deep Link** The [deep link](deep_link) demonstrates how to set up cold and
+warm launches with deep linking on Android and iOS.
+
 Note on Gradle wrapper files in `.gitignore`:
 
 Gradle wrapper files should normally be checked into source control.
