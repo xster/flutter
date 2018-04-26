@@ -31,14 +31,17 @@ class Tracing {
   }
 
   /// Stops tracing; optionally wait for first frame.
-  Future<Map<String, dynamic>> stopTracingAndDownloadTimeline({
-    bool waitForFirstFrame: false
+  Future<Map<String, dynamic>> downloadTimeline({
+    bool waitForFirstFrame: false,
+    bool stopTracing: false,
   }) async {
     Map<String, dynamic> timeline;
 
     if (!waitForFirstFrame) {
       // Stop tracing immediately and get the timeline
-      await vmService.vm.setVMTimelineFlags(<String>[]);
+      if (stopTracing) {
+        await vmService.vm.setVMTimelineFlags(<String>[]);
+      }
       timeline = await vmService.vm.getVMTimeline();
     } else {
       final Completer<Null> whenFirstFrameRendered = new Completer<Null>();
@@ -65,7 +68,9 @@ class Tracing {
 
       timeline = await vmService.vm.getVMTimeline();
 
-      await vmService.vm.setVMTimelineFlags(<String>[]);
+      if (stopTracing) {
+        await vmService.vm.setVMTimelineFlags(<String>[]);
+      }
     }
 
     return timeline;
@@ -74,7 +79,10 @@ class Tracing {
 
 /// Download the startup trace information from the given observatory client and
 /// store it to build/start_up_info.json.
-Future<Null> downloadStartupTrace(VMService observatory) async {
+Future<Null> downloadStartupTrace(
+  VMService observatory,
+  { bool stopTracing: false }
+) async {
   final String traceInfoFilePath = fs.path.join(getBuildDirectory(), 'start_up_info.json');
   final File traceInfoFile = fs.file(traceInfoFilePath);
 
@@ -88,8 +96,9 @@ Future<Null> downloadStartupTrace(VMService observatory) async {
 
   final Tracing tracing = new Tracing(observatory);
 
-  final Map<String, dynamic> timeline = await tracing.stopTracingAndDownloadTimeline(
-      waitForFirstFrame: true
+  final Map<String, dynamic> timeline = await tracing.downloadTimeline(
+      waitForFirstFrame: true,
+      stopTracing: stopTracing,
   );
 
   int extractInstantEventTimestamp(String eventName) {

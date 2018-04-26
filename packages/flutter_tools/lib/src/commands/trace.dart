@@ -73,7 +73,9 @@ class TraceCommand extends FlutterCommand {
   }
 
   Future<Null> _stopTracing(Tracing tracing) async {
-    final Map<String, dynamic> timeline = await tracing.stopTracingAndDownloadTimeline();
+    final Map<String, dynamic> timeline = await tracing.downloadTimeline(
+      stopTracing: true,
+    );
     File localFile;
 
     if (argResults['out'] != null) {
