@@ -84,7 +84,11 @@ class PaintingContext {
   ///
   ///  * [RenderObject.isRepaintBoundary], which determines if a [RenderObject]
   ///    has a composited layer.
-  static void repaintCompositedChild(RenderObject child, { bool debugAlsoPaintedParent: false }) {
+  static void repaintCompositedChild(
+    RenderObject child, {
+      bool debugAlsoPaintedParent: false,
+      bool makeNextPictureLayerComplex: false,
+    }) {
     assert(child.isRepaintBoundary);
     assert(child._needsPaint);
     assert(() {
@@ -97,7 +101,8 @@ class PaintingContext {
     }());
     if (child._layer == null) {
       assert(debugAlsoPaintedParent);
-      child._layer = new OffsetLayer();
+      child._layer = new OffsetLayer()..makeNextPictureComplex = makeNextPictureLayerComplex;
+      print('made a offset layer ${child._layer} for $child');
     } else {
       assert(debugAlsoPaintedParent || child._layer.attached);
       child._layer.removeAllChildren();
@@ -144,7 +149,11 @@ class PaintingContext {
 
     // Create a layer for our child, and paint the child into it.
     if (child._needsPaint) {
-      repaintCompositedChild(child, debugAlsoPaintedParent: true);
+      repaintCompositedChild(
+        child,
+        debugAlsoPaintedParent: true,
+        makeNextPictureLayerComplex: _containerLayer.makeNextPictureComplex,
+      );
     } else {
       assert(child._layer != null);
       assert(() {
@@ -157,6 +166,7 @@ class PaintingContext {
         return true;
       }());
     }
+    print('new layer ${child._layer} is inside $_containerLayer');
     child._layer.offset = offset;
     _appendLayer(child._layer);
   }
@@ -203,6 +213,10 @@ class PaintingContext {
   void _startRecording() {
     assert(!_isRecording);
     _currentLayer = new PictureLayer(estimatedBounds);
+    print('making a new picture layer $_currentLayer inside $_containerLayer');
+    if (_containerLayer.makeNextPictureComplex) {
+      _currentLayer.isComplexHint = true;
+    }
     _recorder = new ui.PictureRecorder();
     _canvas = new Canvas(_recorder);
     _containerLayer.append(_currentLayer);
@@ -243,7 +257,13 @@ class PaintingContext {
   /// decide whether the current layer is complex enough to benefit from
   /// caching.
   void setIsComplexHint() {
-    _currentLayer?.isComplexHint = true;
+    if (_currentLayer == null) {
+      print('marking container $_containerLayer as complex');
+      _containerLayer.makeNextPictureComplex = true;
+    } else {
+      print('current layer already exists, marking as complex');
+      _currentLayer?.isComplexHint = true;
+    }
   }
 
   /// Hints that the painting in the current layer is likely to change next frame.
@@ -295,12 +315,16 @@ class PaintingContext {
   /// See also:
   ///
   ///  * [addLayer], for pushing a leaf layer whose canvas is not used.
-  void pushLayer(Layer childLayer, PaintingContextCallback painter, Offset offset, { Rect childPaintBounds }) {
+  void pushLayer(ContainerLayer childLayer, PaintingContextCallback painter, Offset offset, { Rect childPaintBounds }) {
     assert(!childLayer.attached);
     assert(childLayer.parent == null);
     assert(painter != null);
     _stopRecordingIfNeeded();
     _appendLayer(childLayer);
+    if (_containerLayer.makeNextPictureComplex) {
+      print('making $childLayer complex');
+      childLayer.makeNextPictureComplex = true;
+    }
     final PaintingContext childContext = new PaintingContext._(childLayer, childPaintBounds ?? estimatedBounds);
     painter(childContext, offset);
     childContext._stopRecordingIfNeeded();
@@ -1715,6 +1739,8 @@ abstract class RenderObject extends AbstractNode with DiagnosticableTreeMixin im
   ///
   /// Warning: This getter must not change value over the lifetime of this object.
   bool get isRepaintBoundary => false;
+
+  bool get isRepaintSuperBoundary => false;
 
   /// Called, in checked mode, if [isRepaintBoundary] is true, when either the
   /// this render object or its parent attempt to paint.

@@ -477,6 +477,7 @@ class _ModalScopeState<T> extends State<_ModalScope<T>> {
           child: new FocusScope(
             node: widget.route.focusScopeNode, // immutable
             child: new RepaintBoundary(
+              // superRepaintBoundary: true,
               child: new AnimatedBuilder(
                 animation: _listenable, // immutable
                 builder: (BuildContext context, Widget child) {
@@ -492,6 +493,7 @@ class _ModalScopeState<T> extends State<_ModalScope<T>> {
                 },
                 child: _page ??= new RepaintBoundary(
                   key: widget.route._subtreeKey, // immutable
+                  superRepaintBoundary: true,
                   child: new Builder(
                     builder: (BuildContext context) {
                       return widget.route.buildPage(

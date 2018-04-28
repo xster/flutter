@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:developer' show Timeline;
 import 'dart:ui' as ui show Image, ImageFilter;
 
 import 'package:flutter/foundation.dart';
@@ -4741,7 +4742,9 @@ class Listener extends SingleChildRenderObjectWidget {
 /// for the surround tree.
 class RepaintBoundary extends SingleChildRenderObjectWidget {
   /// Creates a widget that isolates repaints.
-  const RepaintBoundary({ Key key, Widget child }) : super(key: key, child: child);
+  const RepaintBoundary({ Key key, this.superRepaintBoundary: false,  Widget child }) : super(key: key, child: child);
+
+  final bool superRepaintBoundary;
 
   /// Wraps the given child in a [RepaintBoundary].
   ///
@@ -4766,7 +4769,9 @@ class RepaintBoundary extends SingleChildRenderObjectWidget {
   }
 
   @override
-  RenderRepaintBoundary createRenderObject(BuildContext context) => new RenderRepaintBoundary();
+  RenderRepaintBoundary createRenderObject(BuildContext context) {
+    return new RenderRepaintBoundary(superRepaintBoundary: superRepaintBoundary);
+  }
 }
 
 /// A widget that is invisible during hit testing.

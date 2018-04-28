@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:developer' show Timeline;
 
 import 'dart:ui' as ui show ImageFilter, Gradient, Image;
 
@@ -2450,10 +2451,26 @@ class RenderPointerListener extends RenderProxyBoxWithHitTestBehavior {
 /// [debugAsymmetricPaintCount] and [debugSymmetricPaintCount] respectively.
 class RenderRepaintBoundary extends RenderProxyBox {
   /// Creates a repaint boundary around [child].
-  RenderRepaintBoundary({ RenderBox child }) : super(child);
+  RenderRepaintBoundary({ this.superRepaintBoundary: false, RenderBox child }) : super(child) {
+    if (superRepaintBoundary) {
+      print('new super render repaint boundary $this');
+    }
+  }
+
+  final bool superRepaintBoundary;
 
   @override
   bool get isRepaintBoundary => true;
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    if (superRepaintBoundary) {
+      print('paint super render repaint boundary $this');
+      // context.canvas;
+      context.setIsComplexHint();
+    }
+    super.paint(context, offset);
+  }
 
   /// Capture an image of the current state of this render object and its
   /// children.

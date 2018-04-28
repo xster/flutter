@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:developer' show Timeline;
 import 'dart:ui' as ui show Image, ImageFilter, Picture, Scene, SceneBuilder;
 import 'dart:ui' show Offset;
 
@@ -158,6 +159,10 @@ class PictureLayer extends Layer {
 
   @override
   void addToScene(ui.SceneBuilder builder, Offset layerOffset) {
+    if (isComplexHint) {
+      print('COMPLEX layer');
+      Timeline.instantSync('COMPLEX layer');
+    }
     builder.addPicture(layerOffset, picture, isComplexHint: isComplexHint, willChangeHint: willChangeHint);
   }
 
@@ -165,6 +170,7 @@ class PictureLayer extends Layer {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(new DiagnosticsProperty<Rect>('paint bounds', canvasBounds));
+    properties.add(new DiagnosticsProperty<bool>('is complex', isComplexHint));
   }
 }
 
@@ -295,6 +301,8 @@ class ContainerLayer extends Layer {
   /// The last composited layer in this layer's child list.
   Layer get lastChild => _lastChild;
   Layer _lastChild;
+
+  bool makeNextPictureComplex = false;
 
   bool _debugUltimatePreviousSiblingOf(Layer child, { Layer equals }) {
     assert(child.attached == attached);
@@ -461,6 +469,12 @@ class ContainerLayer extends Layer {
   void applyTransform(Layer child, Matrix4 transform) {
     assert(child != null);
     assert(transform != null);
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(new DiagnosticsProperty<bool>('makeNextPictureLayerComplex', makeNextPictureComplex));
   }
 
   @override
