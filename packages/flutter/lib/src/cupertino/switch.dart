@@ -51,7 +51,11 @@ class CupertinoSwitch extends StatefulWidget {
     Key key,
     @required this.value,
     @required this.onChanged,
+<<<<<<< HEAD
     this.activeColor = CupertinoColors.activeGreen,
+=======
+    this.activeColor,
+>>>>>>> Initial proof of concept, no docs, no test
   }) : super(key: key);
 
   /// Whether this switch is on or off.
@@ -82,6 +86,8 @@ class CupertinoSwitch extends StatefulWidget {
   final ValueChanged<bool> onChanged;
 
   /// The color to use when this switch is on.
+  ///
+  /// Defaults to [CupertinoColors.activeGreen].
   final Color activeColor;
 
   @override
@@ -100,7 +106,7 @@ class _CupertinoSwitchState extends State<CupertinoSwitch> with TickerProviderSt
   Widget build(BuildContext context) {
     return new _CupertinoSwitchRenderObjectWidget(
       value: widget.value,
-      activeColor: widget.activeColor,
+      activeColor: widget.activeColor ?? CupertinoColors.activeGreen,
       onChanged: widget.onChanged,
       vsync: this,
     );
