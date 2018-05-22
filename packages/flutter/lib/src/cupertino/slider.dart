@@ -189,6 +189,8 @@ class CupertinoSlider extends StatefulWidget {
   final int divisions;
 
   /// The color to use for the portion of the slider that has been selected.
+  ///
+  /// Defaults to [CupertinoColors.activeBlue].
   final Color activeColor;
 
   @override
