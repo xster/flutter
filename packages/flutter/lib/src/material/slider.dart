@@ -83,12 +83,18 @@ typedef String SemanticFormatterCallback(double value);
 /// and [inactiveColor] properties, although more fine-grained control of the
 /// look is achieved using a [SliderThemeData].
 ///
+/// When descending from a [Theme] with a [AdaptiveWidgetThemeData] that
+/// includes the [Slider] type in [AdaptiveWidgetThemeData.isWidgetAdaptive],
+/// a [CupertinoSlider] will be used instead when running on iOS.
+///
 /// See also:
 ///
 ///  * [SliderTheme] and [SliderThemeData] for information about controlling
 ///    the visual appearance of the slider.
 ///  * [Radio], for selecting among a set of explicit values.
 ///  * [Checkbox] and [Switch], for toggling a particular value on or off.
+///  * [CupertinoSlider], the widget that's used instead when adaping for iOS
+///    based on [ThemeData.adaptiveWidgetTheme].
 ///  * <https://material.google.com/components/sliders.html>
 ///  * [MediaQuery], from which the text scale factor is obtained.
 class Slider extends StatelessWidget {
@@ -273,6 +279,9 @@ class Slider extends StatelessWidget {
   ///
   /// If null, then the value indicator will not be displayed.
   ///
+  /// This argument is ignored when adapting for iOS since [CupertinoSlider]
+  /// has no label.
+  ///
   /// See also:
   ///
   ///  * [SliderComponentShape] for how to create a custom value indicator
@@ -300,6 +309,8 @@ class Slider extends StatelessWidget {
   ///
   /// Using a [SliderTheme] gives much more fine-grained control over the
   /// appearance of various components of the slider.
+  ///
+  /// This argument is ignored when adapting for iOS.
   final Color inactiveColor;
 
   /// The callback used to create a semantic value from a slider value.
