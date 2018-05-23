@@ -372,6 +372,7 @@ class Slider extends StatelessWidget {
           activeColor: activeColor,
         );
       },
+      themeAdaptiveType: Slider,
     );
   }
 }
