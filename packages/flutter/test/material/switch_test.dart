@@ -275,7 +275,7 @@ void main() {
     SystemChannels.accessibility.setMockMessageHandler(null);
   });
 
-  testWidgets('Slider adapts to CupertinoSwitch on iOS', (WidgetTester tester) async {
+  testWidgets('Switch adapts to CupertinoSwitch on iOS', (WidgetTester tester) async {
     bool switchValue = true;
 
     await tester.pumpWidget(
