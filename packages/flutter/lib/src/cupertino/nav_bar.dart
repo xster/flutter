@@ -165,6 +165,26 @@ class CupertinoNavigationBar extends StatelessWidget implements ObstructingPrefe
       ),
     );
   }
+
+  static CupertinoNavigationBar lerp(
+    CupertinoNavigationBar a,
+    CupertinoNavigationBar b,
+    double t
+  ) {
+    assert(a != null);
+    assert(b != null);
+    assert(t != null);
+    return new CupertinoNavigationBar(
+      leading: new Transform.translate(
+        offset: new Offset((1 - t) * 200.0, 0.0),
+        child: a.middle,
+      ),
+      middle: new Transform.translate(
+        offset: new Offset((1 - t) * 200.0, 0.0),
+        child: b.middle,
+      )
+    );
+  }
 }
 
 /// An iOS-styled navigation bar with iOS-11-style large titles using slivers.
