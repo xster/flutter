@@ -175,13 +175,38 @@ class CupertinoNavigationBar extends StatelessWidget implements ObstructingPrefe
     assert(b != null);
     assert(t != null);
     return new CupertinoNavigationBar(
-      leading: new Transform.translate(
-        offset: new Offset((1 - t) * 200.0, 0.0),
-        child: a.middle,
+      leading: DefaultTextStyle(
+        style: TextStyle.lerp(
+          const TextStyle(
+            fontFamily: '.SF UI Text',
+            fontSize: 17.0,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.08,
+            color: CupertinoColors.black,
+          ),
+          const TextStyle(
+            fontFamily: '.SF UI Text',
+            fontSize: 17.0,
+            letterSpacing: -0.24,
+            color: CupertinoColors.activeBlue,
+          ),
+          t
+        ),
+        child: new Transform.translate(
+          offset: new Offset((1 - t) * 200.0, 0.0),
+          child: new Align(
+            widthFactor: 1.0,
+            alignment: Alignment.center,
+            child: a.middle,
+          ),
+        ),
       ),
-      middle: new Transform.translate(
-        offset: new Offset((1 - t) * 200.0, 0.0),
-        child: b.middle,
+      middle: Opacity(
+        opacity: 0.2 + 0.7 * t,
+        child: new Transform.translate(
+          offset: new Offset((1 - t) * 200.0, 0.0),
+          child: b.middle,
+        ),
       )
     );
   }
