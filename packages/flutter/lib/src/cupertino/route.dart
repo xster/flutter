@@ -79,7 +79,7 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
   /// be null.
   CupertinoPageRoute({
     @required this.builder,
-    String title,
+    this.title,
     RouteSettings settings,
     this.maintainState = true,
     bool fullscreenDialog = false,
@@ -87,7 +87,6 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
   }) : assert(builder != null),
        assert(maintainState != null),
        assert(fullscreenDialog != null),
-       _title = title,
        super(settings: settings, fullscreenDialog: fullscreenDialog) {
     // ignore: prefer_asserts_in_initializer_lists , https://github.com/dart-lang/sdk/issues/31223
     assert(opaque); // PageRoute makes it return true.
@@ -96,12 +95,16 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
   /// Builds the primary contents of the route.
   final WidgetBuilder builder;
 
-  String _title;
-  String get title => _title ?? _titleProvider.title;
+  final String title;
 
-  CupertinoPageTitleProvider _titleProvider;
-  set titleProvider(CupertinoPageTitleProvider titleProvider) {
-    _titleProvider = titleProvider;
+  CupertinoPageRoute<dynamic> _previousRoute;
+  String get previousTitle => _previousRoute?.title;
+
+  @override
+  void didChangePrevious(Route<dynamic> previousRoute) {
+    if (previousRoute is CupertinoPageRoute)
+      _previousRoute = previousRoute;
+    super.didChangePrevious(previousRoute);
   }
 
   @override
@@ -288,10 +291,6 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
 
   @override
   String get debugLabel => '${super.debugLabel}(${settings.name})';
-}
-
-abstract class CupertinoPageTitleProvider {
-  String get title;
 }
 
 /// Provides an iOS-style page transition animation.
