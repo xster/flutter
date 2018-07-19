@@ -421,29 +421,6 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
 
   @override
   Widget build(BuildContext context) {
-    final ModalRoute<dynamic> currentRoute = ModalRoute.of(context);
-
-    // Auto add back button if leading not provided.
-    Widget effectiveLeading = leading;
-    if (effectiveLeading == null
-        && automaticallyImplyLeading
-        && currentRoute?.canPop == true) {
-      final bool useCloseButton =
-          currentRoute is PageRoute && currentRoute?.fullscreenDialog == true;
-      effectiveLeading = new CupertinoButton(
-        child: useCloseButton
-            ? const Text('Close')
-            : new Container(
-              height: _kNavBarPersistentHeight,
-              width: _kNavBarBackButtonTapWidth,
-              alignment: AlignmentDirectional.centerStart,
-              child: const Icon(CupertinoIcons.back, size: 34.0,)
-            ),
-        padding: EdgeInsets.zero,
-        onPressed: () { Navigator.maybePop(context); },
-      );
-    }
-
     final TextStyle actionsStyle = new TextStyle(
       fontFamily: '.SF UI Text',
       fontSize: 17.0,
@@ -451,7 +428,7 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
       color: actionsForegroundColor,
     );
 
-    final Widget styledLeading = effectiveLeading == null
+    final Widget styledLeading = leading == null
         ? null
         : new Padding(
           padding: new EdgeInsetsDirectional.only(
@@ -496,8 +473,41 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
         child: styledMiddle,
       );
 
+    // Auto add back button if leading not provided.
+    Widget backOrCloseButton;
+    if (styledLeading == null && automaticallyImplyLeading) {
+      final ModalRoute<dynamic> currentRoute = ModalRoute.of(context);
+      if (currentRoute?.canPop == true) {
+        Widget backOrCloseButtonContent;
+        if (currentRoute is PageRoute && currentRoute?.fullscreenDialog == true) {
+          backOrCloseButtonContent = const Text('Close');
+        } else {
+          final List<Widget> backButtonContent = <Widget>[
+            const Icon(CupertinoIcons.back, size: 34.0)
+          ];
+          if (currentRoute is CupertinoPageRoute
+              && currentRoute.previousTitle?.isNotEmpty == true) {
+            backButtonContent.add(new Text(currentRoute.previousTitle));
+          }
+          backOrCloseButtonContent = ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: _kNavBarBackButtonTapWidth),
+            child: new Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: backButtonContent,
+            ),
+          );
+        }
+        backOrCloseButton = new CupertinoButton(
+          child: backOrCloseButtonContent,
+          padding: EdgeInsets.zero,
+          onPressed: () { Navigator.maybePop(context); },
+        );
+      }
+    }
+
     Widget paddedToolbar = new NavigationToolbar(
-      leading: styledLeading,
+      leading: styledLeading ?? backOrCloseButton,
       middle: animatedStyledMiddle,
       trailing: styledTrailing,
       centerMiddle: true,

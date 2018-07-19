@@ -104,6 +104,17 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
     _titleProvider = titleProvider;
   }
 
+  CupertinoPageRoute<dynamic> _previousRoute;
+  String get previousTitle => _previousRoute?.title;
+
+  @override
+  void didChangePrevious(Route<dynamic> previousRoute) {
+    print('given previous route $previousRoute');
+    if (previousRoute is CupertinoPageRoute)
+      _previousRoute = previousRoute;
+    super.didChangePrevious(previousRoute);
+  }
+
   @override
   final bool maintainState;
 
