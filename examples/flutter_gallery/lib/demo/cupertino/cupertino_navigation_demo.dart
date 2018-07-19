@@ -126,10 +126,10 @@ class CupertinoDemoTab1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new CupertinoPageScaffold(
+      title: 'Colors',
       child: new CustomScrollView(
         slivers: <Widget>[
           const CupertinoSliverNavigationBar(
-            largeTitle: const Text('Colors'),
             trailing: const ExitButton(),
           ),
           new SliverPadding(
@@ -285,8 +285,8 @@ class Tab1ItemPageState extends State<Tab1ItemPage> {
   @override
   Widget build(BuildContext context) {
     return new CupertinoPageScaffold(
-      navigationBar: new CupertinoNavigationBar(
-        middle: new Text(widget.colorName),
+      title: widget.colorName,
+      navigationBar: const CupertinoNavigationBar(
         trailing: const ExitButton(),
       ),
       child: new SafeArea(
@@ -414,8 +414,8 @@ class CupertinoDemoTab2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new CupertinoPageScaffold(
+      title: 'Support Chat',
       navigationBar: const CupertinoNavigationBar(
-        middle: const Text('Support Chat'),
         trailing: const ExitButton(),
       ),
       child: new ListView(
@@ -698,8 +698,8 @@ class CupertinoDemoTab3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new CupertinoPageScaffold(
+      title: 'Account',
       navigationBar: const CupertinoNavigationBar(
-        middle: const Text('Account'),
         trailing: const ExitButton(),
       ),
       child: new DecoratedBox(
