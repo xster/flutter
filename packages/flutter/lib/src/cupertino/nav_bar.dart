@@ -485,10 +485,27 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
           final List<Widget> backButtonContent = <Widget>[
             const Icon(CupertinoIcons.back, size: 34.0)
           ];
-          if (currentRoute is CupertinoPageRoute
-              && currentRoute.previousTitle?.isNotEmpty == true) {
-            backButtonContent.add(new Text(currentRoute.previousTitle));
+          if (currentRoute is CupertinoPageRoute) {
+            Text textForLayout;
+            if (currentRoute.previousTitle?.isNotEmpty == true) {
+              print('previous title ${currentRoute.previousTitle} is known');
+              textForLayout = Text(' ' * currentRoute.previousTitle.length);
+            } else {
+              print('previous title of ${currentRoute.title} is not known');
+            }
+            backButtonContent.add(CustomPaint(
+              painter: new _CupertinoPreviousPageTitlePainter(
+                currentRoute,
+                actionsStyle,
+                Directionality.of(context),
+              ),
+              child: textForLayout,
+            ));
           }
+          // if (currentRoute is CupertinoPageRoute
+          //     && currentRoute.previousTitle?.isNotEmpty == true) {
+          //   backButtonContent.add(new Text(currentRoute.previousTitle));
+          // }
           backOrCloseButtonContent = ConstrainedBox(
             constraints: const BoxConstraints(minWidth: _kNavBarBackButtonTapWidth),
             child: new Row(
@@ -536,6 +553,35 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
         ),
       ),
     );
+  }
+}
+
+class _CupertinoPreviousPageTitlePainter extends CustomPainter {
+  _CupertinoPreviousPageTitlePainter(this.route, this.textStyle, this.direction);
+
+  final CupertinoPageRoute<dynamic> route;
+  final TextStyle textStyle;
+  final TextDirection direction;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final String text = route.previousTitle;
+    if (text?.isNotEmpty == true) {
+      final TextPainter textPainter = new TextPainter(
+        text: new TextSpan(text: text, style: textStyle),
+        textDirection: direction,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        size.isEmpty ? Offset.zero : new Offset(0.0, -(textPainter.height / 2)),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_CupertinoPreviousPageTitlePainter oldDelegate) {
+    return route != oldDelegate.route;
   }
 }
 

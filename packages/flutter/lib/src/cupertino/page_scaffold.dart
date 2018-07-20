@@ -67,6 +67,7 @@ class _CupertinoPageScaffoldState extends State<CupertinoPageScaffold> implement
     final ModalRoute<dynamic> route = ModalRoute.of(context);
     if (route is CupertinoPageRoute) {
       currentRoute = route;
+      print('pushing title ${widget.title} up');
       currentRoute.titleProvider = this;
     }
     super.didChangeDependencies();

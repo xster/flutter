@@ -1533,14 +1533,17 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin {
     assert(() { _debugLocked = true; return true; }());
     assert(route != null);
     assert(route._navigator == null);
+    print('pushing in ${route.settings.name}');
     final Route<dynamic> oldRoute = _history.isNotEmpty ? _history.last : null;
     route._navigator = this;
     route.install(_currentOverlayEntry);
     _history.add(route);
     route.didPush();
     route.didChangeNext(null);
-    if (oldRoute != null)
+    if (oldRoute != null) {
       oldRoute.didChangeNext(route);
+      route.didChangePrevious(oldRoute);
+    }
     for (NavigatorObserver observer in widget.observers)
       observer.didPush(route, oldRoute);
     assert(() { _debugLocked = false; return true; }());

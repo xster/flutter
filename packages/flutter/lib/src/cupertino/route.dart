@@ -97,7 +97,7 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
   final WidgetBuilder builder;
 
   String _title;
-  String get title => _title ?? _titleProvider.title;
+  String get title => _title ?? _titleProvider?.title;
 
   CupertinoPageTitleProvider _titleProvider;
   set titleProvider(CupertinoPageTitleProvider titleProvider) {
@@ -109,7 +109,6 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
 
   @override
   void didChangePrevious(Route<dynamic> previousRoute) {
-    print('given previous route $previousRoute');
     if (previousRoute is CupertinoPageRoute)
       _previousRoute = previousRoute;
     super.didChangePrevious(previousRoute);
@@ -257,6 +256,7 @@ class CupertinoPageRoute<T> extends PageRoute<T> {
 
   @override
   Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+    print('building cupertino page route page for ${settings.name}');
     final Widget result = new Semantics(
       scopesRoute: true,
       explicitChildNodes: true,
