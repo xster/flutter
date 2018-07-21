@@ -49,7 +49,8 @@ class _CupertinoRefreshControlDemoState extends State<CupertinoRefreshControlDem
           child: new CustomScrollView(
             slivers: <Widget>[
               const CupertinoSliverNavigationBar(
-                largeTitle: const Text('Cupertino Refresh'),
+                largeTitle: Text('Cupertino Refresh'),
+                previousPageTitle: 'Cupertino',
               ),
               new CupertinoSliverRefreshControl(
                 onRefresh: () {
