@@ -482,24 +482,46 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
         if (currentRoute is PageRoute && currentRoute?.fullscreenDialog == true) {
           backOrCloseButtonContent = const Text('Close');
         } else {
+          final TextDirection textDirection = Directionality.of(context);
+
           final List<Widget> backButtonContent = <Widget>[
-            const Icon(CupertinoIcons.back, size: 34.0)
+            const Padding(padding: EdgeInsetsDirectional.only(start: 9.0)),
+            new RichText(
+              textDirection: textDirection,
+              text: new TextSpan(
+                text: new String.fromCharCode(CupertinoIcons.back.codePoint),
+                style: new TextStyle(
+                  inherit: false,
+                  color: actionsForegroundColor,
+                  fontSize: 34.0,
+                  fontFamily: CupertinoIcons.back.fontFamily,
+                  package: CupertinoIcons.back.fontPackage,
+                ),
+              ),
+            ),
+            const Padding(padding: EdgeInsetsDirectional.only(start: 5.0)),
           ];
+
+          // final List<Widget> backButtonContent = <Widget>[
+          //   const Icon(CupertinoIcons.back, size: 34.0)
+          // ];
+
           if (currentRoute is CupertinoPageRoute) {
-            Text textForLayout;
-            if (currentRoute.previousTitle?.isNotEmpty == true) {
-              print('previous title ${currentRoute.previousTitle} is known');
-              textForLayout = Text(' ' * currentRoute.previousTitle.length);
-            } else {
-              print('previous title of ${currentRoute.title} is not known');
-            }
+            // Text textForLayout;
+            // if (currentRoute.previousTitle?.isNotEmpty == true) {
+            //   print('previous title ${currentRoute.previousTitle} is known');
+            //   textForLayout = Text(' ' * currentRoute.previousTitle.length);
+            // } else {
+            //   print('previous title of ${currentRoute.title} is not known');
+            // }
             backButtonContent.add(CustomPaint(
               painter: new _CupertinoPreviousPageTitlePainter(
                 currentRoute,
                 actionsStyle,
                 Directionality.of(context),
               ),
-              child: textForLayout,
+              size: Size.infinite,
+              // child: textForLayout,
             ));
           }
           // if (currentRoute is CupertinoPageRoute
@@ -528,6 +550,7 @@ class _CupertinoPersistentNavigationBar extends StatelessWidget implements Prefe
       middle: animatedStyledMiddle,
       trailing: styledTrailing,
       centerMiddle: true,
+      middleSpacing: 6.0,
     );
 
     if (padding != null) {
@@ -574,7 +597,7 @@ class _CupertinoPreviousPageTitlePainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        size.isEmpty ? Offset.zero : new Offset(0.0, -(textPainter.height / 2)),
+        size.isEmpty ? new Offset(0.0, -(textPainter.height / 2)) : Offset.zero,
       );
     }
   }
