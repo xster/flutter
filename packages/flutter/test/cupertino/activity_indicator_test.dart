@@ -4,7 +4,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../widgets/semantics_tester.dart';
 
 void main() {
   testWidgets('Activity indicator animate property works', (WidgetTester tester) async {
@@ -21,5 +24,16 @@ void main() {
 
     await tester.pumpWidget(const Center(child: const CupertinoActivityIndicator()));
     expect(SchedulerBinding.instance.transientCallbackCount, equals(1));
+  });
+
+  testWidgets('tabs announce semantics', (WidgetTester tester) async {
+    final SemanticsTester semantics = new SemanticsTester(tester);
+    await tester.pumpWidget(const Center(child: const CupertinoActivityIndicator(animating: false)));
+    debugDumpSemanticsTree(DebugSemanticsDumpOrder.inverseHitTest);
+    expect(semantics, includesNodeWith(
+      label: 'progress',
+      textDirection: TextDirection.ltr,
+    ));
+    semantics.dispose();
   });
 }
