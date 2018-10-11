@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import '../../gallery/demo.dart';
 
@@ -19,12 +18,13 @@ class _CupertinoButtonDemoState extends State<CupertinoButtonsDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cupertino Buttons'),
-        actions: <Widget>[MaterialDemoDocumentationButton(CupertinoButtonsDemo.routeName)],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        previousPageTitle: 'Back',
+        middle: const Text('Cupertino Buttons'),
+        trailing: CupertinoDemoDocumentationButton(CupertinoButtonsDemo.routeName),
       ),
-      body: Column(
+      child: Column(
         children: <Widget> [
           const Padding(
             padding: EdgeInsets.all(16.0),

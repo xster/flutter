@@ -50,12 +50,13 @@ class _CupertinoSegmentedControlDemoState extends State<CupertinoSegmentedContro
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Segmented Control'),
-        actions: <Widget>[MaterialDemoDocumentationButton(CupertinoSegmentedControlDemo.routeName)],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        previousPageTitle: 'Back',
+        middle: const Text('Segmented Control'),
+        trailing: CupertinoDemoDocumentationButton(CupertinoSegmentedControlDemo.routeName),
       ),
-      body: Column(
+      child: Column(
         children: <Widget>[
           const Padding(
             padding: EdgeInsets.all(16.0),

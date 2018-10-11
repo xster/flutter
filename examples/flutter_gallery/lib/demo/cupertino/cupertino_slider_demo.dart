@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import '../../gallery/demo.dart';
 
@@ -20,12 +19,13 @@ class _CupertinoSliderDemoState extends State<CupertinoSliderDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cupertino Sliders'),
-        actions: <Widget>[MaterialDemoDocumentationButton(CupertinoSliderDemo.routeName)],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        previousPageTitle: 'Back',
+        middle: const Text('Cupertino Sliders'),
+        trailing: CupertinoDemoDocumentationButton(CupertinoSliderDemo.routeName),
       ),
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

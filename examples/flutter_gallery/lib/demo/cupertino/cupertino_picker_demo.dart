@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../gallery/demo.dart';
@@ -249,12 +248,13 @@ class _CupertinoPickerDemoState extends State<CupertinoPickerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cupertino Picker'),
-        actions: <Widget>[MaterialDemoDocumentationButton(CupertinoPickerDemo.routeName)],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        previousPageTitle: 'Back',
+        middle: const Text('Cupertino Picker'),
+        trailing: CupertinoDemoDocumentationButton(CupertinoPickerDemo.routeName),
       ),
-      body: DefaultTextStyle(
+      child: DefaultTextStyle(
         style: const TextStyle(
           fontFamily: '.SF UI Text',
           fontSize: 17.0,

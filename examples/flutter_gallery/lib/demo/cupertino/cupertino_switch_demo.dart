@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import '../../gallery/demo.dart';
 
@@ -20,12 +19,13 @@ class _CupertinoSwitchDemoState extends State<CupertinoSwitchDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cupertino Switch'),
-        actions: <Widget>[MaterialDemoDocumentationButton(CupertinoSwitchDemo.routeName)],
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        previousPageTitle: 'Back',
+        middle: const Text('Cupertino Switch'),
+        trailing: CupertinoDemoDocumentationButton(CupertinoSwitchDemo.routeName),
       ),
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
