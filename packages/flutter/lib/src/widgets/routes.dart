@@ -114,6 +114,16 @@ abstract class TransitionRoute<T> extends OverlayRoute<T> {
   AnimationController get controller => _controller;
   AnimationController _controller;
 
+  /// The animation for the route being pushed on top of this route. This
+  /// animation lets this route coordinate with the entrance and exit transition
+  /// of routes pushed on top of this route.
+  Animation<double> get secondaryAnimation => _secondaryAnimation;
+  final ProxyAnimation _secondaryAnimation = ProxyAnimation(kAlwaysDismissedAnimation);
+
+  @protected
+  Route<dynamic> get previousRoute => _previousRoute;
+  Route<dynamic> _previousRoute;
+
   /// Called to create the animation controller that will drive the transitions to
   /// this route from the previous one, and back to the previous route from this
   /// one.
@@ -163,12 +173,6 @@ abstract class TransitionRoute<T> extends OverlayRoute<T> {
     }
     changedInternalState();
   }
-
-  /// The animation for the route being pushed on top of this route. This
-  /// animation lets this route coordinate with the entrance and exit transition
-  /// of routes pushed on top of this route.
-  Animation<double> get secondaryAnimation => _secondaryAnimation;
-  final ProxyAnimation _secondaryAnimation = ProxyAnimation(kAlwaysDismissedAnimation);
 
   @override
   void install(OverlayEntry insertionPoint) {
@@ -221,6 +225,14 @@ abstract class TransitionRoute<T> extends OverlayRoute<T> {
     assert(!_transitionCompleter.isCompleted, 'Cannot reuse a $runtimeType after disposing it.');
     _updateSecondaryAnimation(nextRoute);
     super.didChangeNext(nextRoute);
+  }
+
+  @override
+  void didChangePrevious(Route<dynamic> previousRoute) {
+    assert(_controller != null, '$runtimeType.didChangePrevious called before calling install() or after calling dispose().');
+    assert(!_transitionCompleter.isCompleted, 'Cannot reuse a $runtimeType after disposing it.');
+    _previousRoute = previousRoute;
+    super.didChangePrevious(previousRoute);
   }
 
   void _updateSecondaryAnimation(Route<dynamic> nextRoute) {
