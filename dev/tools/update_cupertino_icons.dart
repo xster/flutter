@@ -88,11 +88,38 @@ void main(List<String> args) {
 
       for (final String symbol in symbols.keys) {
         final List<String> parts = symbol.split('.');
-        final String capitalCased = parts.map((String part) => part[0].toUpperCase() + part.substring(1)).join();
-        final String camelCased = capitalCased[0].toLowerCase() + capitalCased.substring(1);
+        final String capitalCased = parts
+            .map((String part) => part[0].toUpperCase() + part.substring(1))
+            .join();
+        String camelCased =
+            capitalCased[0].toLowerCase() + capitalCased.substring(1);
+
+        const Map<String, String> prefixSwap = <String, String>{
+          '4k': 'fourK',
+          // Special words
+          'case': 'caseIcon',
+          'return': 'returnIcon',
+          'key': 'keyIcon',
+        };
+
+        for (final String prefix in prefixSwap.keys) {
+          if (camelCased.startsWith(prefix)) {
+            camelCased = camelCased.replaceFirst(prefix, prefixSwap[prefix]);
+          }
+        }
+
+        if (camelCased.startsWith(RegExp(r'\d+'))) {
+          camelCased = 'number$camelCased';
+        }
+
+        const Map<Version, String> availableVersion = <Version, String>{
+          Version.iOS13: 'iOS 13+',
+          Version.iOS14: 'iOS 14+',
+        };
         newIconClassBuffer.writeln(
-          "static CupertinoIcon $camelCased() => CupertinoIcon('$symbol');"
-        );
+            "  /// [CupertinoIcon] for SF Symbol '$symbol'. Available on ${availableVersion[symbols[symbol]]}.");
+        newIconClassBuffer.writeln(
+            "  static CupertinoIcon $camelCased({double size = 34.0, Color color}) => CupertinoIcon('$symbol', size: size, color: color);");
       }
     } else if (line.contains('// END GENERATED')) {
       generating = false;
@@ -100,5 +127,5 @@ void main(List<String> args) {
     }
   }
 
-  iconClassFile.writeAsStringSync(newIconClassBuffer.toString())
+  iconClassFile.writeAsStringSync(newIconClassBuffer.toString());
 }

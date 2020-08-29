@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 
 import 'button.dart';
 import 'colors.dart';
-import 'icons.dart';
+import 'icon.dart';
 import 'interface_level.dart';
 import 'localizations.dart';
 import 'route.dart';
@@ -363,8 +363,7 @@ class _CupertinoAppState extends State<CupertinoApp> {
 
   Widget _inspectorSelectButtonBuilder(BuildContext context, VoidCallback onPressed) {
     return CupertinoButton.filled(
-      child: const Icon(
-        CupertinoIcons.search,
+      child: CupertinoIcon.magnifyingglass(
         size: 28.0,
         color: CupertinoColors.white,
       ),

@@ -941,4 +941,7 @@ class CupertinoIcons {
   ///
   ///  * [brightness], same shape, but not filled in.
   static const IconData brightness_solid = IconData(0xf4B7, fontFamily: iconFont, fontPackage: iconFontPackage);
+
+  /// A question mark ('?') in a circle.
+  static const IconData question_circled = IconData(0xf445, fontFamily: iconFont, fontPackage: iconFontPackage);
 }
