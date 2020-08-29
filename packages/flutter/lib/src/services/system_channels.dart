@@ -53,7 +53,7 @@ class SystemChannels {
       JSONMethodCodec(),
   );
 
-  /// A JSON [MethodChannel] for invoking miscellaneous platform methods.
+  /// A [MethodChannel] for invoking miscellaneous platform methods.
   ///
   /// The following outgoing methods are defined for this channel (invoked using
   /// [OptionalMethodChannel.invokeMethod]):
@@ -103,11 +103,14 @@ class SystemChannels {
   ///  * `SystemNavigator.pop`: Tells the operating system to close the
   ///    application, or the closest equivalent. See [SystemNavigator.pop].
   ///
+  ///  * `SystemImage.load`: Requests a system image from the operating system
+  ///    based on the system image name.
+  ///
   /// Calls to methods that are not implemented on the shell side are ignored
   /// (so it is safe to call methods when the relevant plugin might be missing).
   static const MethodChannel platform = OptionalMethodChannel(
       'flutter/platform',
-      JSONMethodCodec(),
+      StandardMethodCodec(),
   );
 
   /// A JSON [MethodChannel] for handling text input.

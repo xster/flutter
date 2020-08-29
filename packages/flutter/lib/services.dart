@@ -34,6 +34,7 @@ export 'src/services/raw_keyboard_windows.dart';
 export 'src/services/restoration.dart';
 export 'src/services/system_channels.dart';
 export 'src/services/system_chrome.dart';
+export 'src/services/system_image.dart';
 export 'src/services/system_navigator.dart';
 export 'src/services/system_sound.dart';
 export 'src/services/text_editing.dart';
