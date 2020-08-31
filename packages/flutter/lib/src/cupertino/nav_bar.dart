@@ -15,7 +15,7 @@ import 'package:flutter/widgets.dart';
 import 'button.dart';
 import 'colors.dart';
 import 'constants.dart';
-import 'icons.dart';
+import 'icon.dart';
 import 'page_scaffold.dart';
 import 'route.dart';
 import 'theme.dart';
@@ -1380,17 +1380,20 @@ class _BackChevron extends StatelessWidget {
     final TextDirection textDirection = Directionality.of(context);
     final TextStyle textStyle = DefaultTextStyle.of(context).style;
 
-    // Replicate the Icon logic here to get a tightly sized icon and add
-    // custom non-square padding.
-    Widget iconWidget = Text.rich(
-      TextSpan(
-        text: String.fromCharCode(CupertinoIcons.back.codePoint),
-        style: TextStyle(
-          inherit: false,
-          color: textStyle.color,
-          fontSize: 34.0,
-          fontFamily: CupertinoIcons.back.fontFamily,
-          package: CupertinoIcons.back.fontPackage,
+    // The back button is one of the rare cases we're doing something different.
+    // The aspect ratio isn't a square in this case and is squeezed horizontally
+    // with the back label text. It's also slightly thicker.
+    Widget iconWidget = Padding(
+      padding: const EdgeInsetsDirectional.only(start: 2),
+      child: SizedBox(
+        width: 14,
+        child: OverflowBox(
+          maxWidth: 26,
+          child: CupertinoIcon.chevronBackward(
+            color: textStyle.color,
+            size: 26,
+            weight: FontWeight.w500,
+          ),
         ),
       ),
     );

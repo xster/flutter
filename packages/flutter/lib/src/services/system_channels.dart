@@ -53,7 +53,7 @@ class SystemChannels {
       JSONMethodCodec(),
   );
 
-  /// A [MethodChannel] for invoking miscellaneous platform methods.
+  /// A JSON [MethodChannel] for invoking miscellaneous platform methods.
   ///
   /// The following outgoing methods are defined for this channel (invoked using
   /// [OptionalMethodChannel.invokeMethod]):
@@ -103,14 +103,11 @@ class SystemChannels {
   ///  * `SystemNavigator.pop`: Tells the operating system to close the
   ///    application, or the closest equivalent. See [SystemNavigator.pop].
   ///
-  ///  * `SystemImage.load`: Requests a system image from the operating system
-  ///    based on the system image name.
-  ///
   /// Calls to methods that are not implemented on the shell side are ignored
   /// (so it is safe to call methods when the relevant plugin might be missing).
   static const MethodChannel platform = OptionalMethodChannel(
       'flutter/platform',
-      StandardMethodCodec(),
+      JSONMethodCodec(),
   );
 
   /// A JSON [MethodChannel] for handling text input.
@@ -319,6 +316,21 @@ class SystemChannels {
   ///    restoration data is used in Flutter.
   static const MethodChannel restoration = OptionalMethodChannel(
     'flutter/restoration',
+    StandardMethodCodec(),
+  );
+
+  /// A [MethodChannel] for sharing resources with the platform.
+  ///
+  /// The following outgoing methods are defined for this channel (invoked using
+  /// [OptionalMethodChannel.invokeMethod]):
+  ///
+  /// * `SystemImage.load`: Requests a system image from the operating system
+  ///    based on the system image name.
+  ///
+  /// Calls to methods that are not implemented on the shell side are ignored
+  /// (so it is safe to call methods when the relevant plugin might be missing).
+  static const MethodChannel resource = OptionalMethodChannel(
+    'flutter/resource',
     StandardMethodCodec(),
   );
 }

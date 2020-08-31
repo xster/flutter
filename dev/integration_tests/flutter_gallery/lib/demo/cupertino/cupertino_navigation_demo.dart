@@ -57,15 +57,15 @@ class CupertinoNavigationDemo extends StatelessWidget {
           tabBar: CupertinoTabBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.home),
+                icon: CupertinoIcon.house(),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.conversation_bubble),
+                icon: CupertinoIcon.message(),
                 label: 'Support',
               ),
               BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.profile_circled),
+                icon: CupertinoIcon.personCropCircle(),
                 label: 'Profile',
               ),
             ],
@@ -239,14 +239,14 @@ class Tab1RowItem extends StatelessWidget {
                 ),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  child: const Icon(CupertinoIcons.plus_circled,
+                  child: const CupertinoIcon.plusCircle(
                     semanticLabel: 'Add',
                   ),
                   onPressed: () { },
                 ),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  child: const Icon(CupertinoIcons.share,
+                  child: const CupertinoIcon.squareAndArrowUp(
                     semanticLabel: 'Share',
                   ),
                   onPressed: () { },
@@ -364,11 +364,10 @@ class Tab1ItemPageState extends State<Tab1ItemPage> {
                               ),
                               onPressed: () { },
                             ),
-                            CupertinoButton.filled(
+                            CupertinoButton(
                               minSize: 30.0,
                               padding: EdgeInsets.zero,
-                              borderRadius: BorderRadius.circular(32.0),
-                              child: const Icon(CupertinoIcons.ellipsis),
+                              child: const CupertinoIcon.ellipsisCircleFill(size: 28),
                               onPressed: () { },
                             ),
                           ],
@@ -407,8 +406,7 @@ class Tab1ItemPageState extends State<Tab1ItemPage> {
                       ),
                       child: Center(
                         child: CupertinoButton(
-                          child: const Icon(
-                            CupertinoIcons.plus_circled,
+                          child: const CupertinoIcon.plusCircle(
                             color: CupertinoColors.white,
                             size: 36.0,
                           ),
@@ -551,8 +549,7 @@ class Tab2Header extends StatelessWidget {
                             ),
                           ),
                           const Padding(padding: EdgeInsets.only(left: 2.0)),
-                          const Icon(
-                            CupertinoIcons.check_mark_circled,
+                          const CupertinoIcon.checkmarkCircle(
                             color: Color(0xFF646464),
                             size: 20.0,
                           ),
@@ -792,8 +789,7 @@ class Tab3Dialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Icon(
-              CupertinoIcons.profile_circled,
+            const CupertinoIcon.personCropCircle(
               size: 160.0,
               color: Color(0xFF646464),
             ),

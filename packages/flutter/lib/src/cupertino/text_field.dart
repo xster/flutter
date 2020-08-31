@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'colors.dart';
-import 'icons.dart';
+import 'icon.dart';
 import 'text_selection.dart';
 import 'theme.dart';
 
@@ -48,11 +48,11 @@ const Color _kDisabledBackground = CupertinoDynamicColor.withBrightness(
   darkColor: Color(0xFF050505),
 );
 
-// Value inspected from Xcode 11 & iOS 13.0 Simulator.
+// Value inspected from Xcode 12 & iOS 1.0 Simulator.
 // Note it may not be consistent with https://developer.apple.com/design/resources/.
 const CupertinoDynamicColor _kClearButtonColor = CupertinoDynamicColor.withBrightness(
-  color: Color(0xFF636366),
-  darkColor: Color(0xFFAEAEB2),
+  color: Color(0xFF8E8E93),
+  darkColor: Color(0xFF8E8E93),
 );
 
 // An eyeballed value that moves the cursor slightly left of where it is
@@ -884,11 +884,10 @@ class _CupertinoTextFieldState extends State<CupertinoTextField> with Restoratio
               } : null,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Icon(
-                  CupertinoIcons.clear_thick_circled,
-                  size: 18.0,
+                child: CupertinoIcon.xmarkCircleFill(
+                  size: 21,
                   color: CupertinoDynamicColor.resolve(_kClearButtonColor, context),
-                ),
+                )
               ),
             ),
         ]);

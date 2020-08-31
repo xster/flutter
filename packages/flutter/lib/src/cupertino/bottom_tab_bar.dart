@@ -264,13 +264,12 @@ class CupertinoTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// Change the active tab item's icon and title colors to active.
   Widget _wrapActiveItem(BuildContext context, Widget item, { @required bool active }) {
-    if (!active)
-      return item;
-
-    final Color activeColor = CupertinoDynamicColor.resolve(
-      this.activeColor ?? CupertinoTheme.of(context).primaryColor,
-      context,
-    );
+    final Color activeColor = active
+        ? CupertinoDynamicColor.resolve(
+          this.activeColor ?? CupertinoTheme.of(context).primaryColor,
+          context,
+        )
+        : null;
     return IconTheme.merge(
       data: IconThemeData(color: activeColor),
       child: DefaultTextStyle.merge(
